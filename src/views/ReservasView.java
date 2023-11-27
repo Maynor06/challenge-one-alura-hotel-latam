@@ -10,16 +10,28 @@ import javax.swing.JOptionPane;
 import javax.swing.ImageIcon;
 import java.awt.Color;
 import javax.swing.JTextField;
+
+import com.mysql.cj.x.protobuf.MysqlxExpect.Open.CtxOperation;
 import com.toedter.calendar.JDateChooser;
+
+import DAO.ReservasDAO;
+import DTO.ReservaDTO;
+import Modelos.Reserva;
+import Utils.Conexion;
+
 import java.awt.Font;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-import java.text.Format;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.Toolkit;
 import java.beans.PropertyChangeListener;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 import java.beans.PropertyChangeEvent;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
@@ -37,7 +49,11 @@ public class ReservasView extends JFrame {
 	int xMouse, yMouse;
 	private JLabel labelExit;
 	private JLabel labelAtras;
-
+	
+	private Reserva res; 
+	private Conexion con = new Conexion(); 
+	private ReservaDTO reservaDto = new ReservaDTO(con); 
+	
 	/**
 	 * Launch the application.
 	 */
@@ -262,9 +278,11 @@ public class ReservasView extends JFrame {
 		txtFechaSalida.getCalendarButton().setBounds(267, 1, 21, 31);
 		txtFechaSalida.setBackground(Color.WHITE);
 		txtFechaSalida.setFont(new Font("Roboto", Font.PLAIN, 18));
-		txtFechaSalida.addPropertyChangeListener(new PropertyChangeListener() {
+		txtFechaSalida.addPropertyChangeListener(new PropertyChangeListener(){
 			public void propertyChange(PropertyChangeEvent evt) {
 				//Activa el evento, después del usuario seleccionar las fechas se debe calcular el valor de la reserva
+				calcularValor(txtFechaEntrada, txtFechaSalida);
+				
 			}
 		});
 		txtFechaSalida.setDateFormatString("yyyy-MM-dd");
@@ -282,8 +300,8 @@ public class ReservasView extends JFrame {
 		txtValor.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		panel.add(txtValor);
 		txtValor.setColumns(10);
-
-
+	
+		
 		txtFormaPago = new JComboBox();
 		txtFormaPago.setBounds(68, 417, 289, 38);
 		txtFormaPago.setBackground(SystemColor.text);
@@ -291,14 +309,15 @@ public class ReservasView extends JFrame {
 		txtFormaPago.setFont(new Font("Roboto", Font.PLAIN, 16));
 		txtFormaPago.setModel(new DefaultComboBoxModel(new String[] {"Tarjeta de Crédito", "Tarjeta de Débito", "Dinero en efectivo"}));
 		panel.add(txtFormaPago);
-
+		
 		JPanel btnsiguiente = new JPanel();
-		btnsiguiente.addMouseListener(new MouseAdapter() {
+		btnsiguiente.addMouseListener(new MouseAdapter() 
+		
+		{
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (ReservasView.txtFechaEntrada.getDate() != null && ReservasView.txtFechaSalida.getDate() != null) {		
-					RegistroHuesped registro = new RegistroHuesped();
-					registro.setVisible(true);
+					guardarReserva(); 
 				} else {
 					JOptionPane.showMessageDialog(null, "Debes llenar todos los campos.");
 				}
@@ -324,4 +343,46 @@ public class ReservasView extends JFrame {
 	        int y = evt.getYOnScreen();
 	        this.setLocation(x - xMouse, y - yMouse);
 }
+	    
+	    private void guardarReserva() {
+	    	
+	    	res = new Reserva(txtFechaEntrada, txtFechaSalida, txtFormaPago.getSelectedItem().toString());  
+			reservaDto.guardar(res);  	
+			JOptionPane.showMessageDialog(null, "La reservacion se registro con exito :D "); 
+			System.out.println(res.getId());
+			
+			RegistroHuesped registro = new RegistroHuesped(res.getId());
+			registro.setVisible(true);
+			
+	
+	    }
+	    
+	    public void calcularValor(JDateChooser entrada, JDateChooser salida) {
+	    	
+	    	if(entrada.getDate() != null && salida.getDate() != null) {
+	    		Calendar inicio = entrada.getCalendar(); 
+	    		Calendar fin = salida.getCalendar(); 
+	    		
+	    		
+	    		if(inicio.before(fin)) {
+	    			
+	    			int dias = -1; 
+	    			int valor; 
+	    			
+		    		while(inicio.before(fin)|| inicio.equals(fin) ) {
+		    			dias++; 
+		    			inicio.add(Calendar.DATE, 1);
+		    		}
+
+		    		valor = dias * 50; 
+
+		    		txtValor.setText(" $. " + valor); 
+		    	
+	    		}else {
+	    			JOptionPane.showMessageDialog(null,"La fecha de salida no puede ser antes que la fecha de entrada", "Advertencia", JOptionPane.WARNING_MESSAGE); 
+	    		}
+	    		
+}
+	    	
+	    }
 }

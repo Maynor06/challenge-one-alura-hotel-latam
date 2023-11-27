@@ -7,6 +7,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JTextField;
 import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
+
+import DAO.HuespedesDAO;
+import DTO.HuespedesDTO;
+import Modelos.Huespedes;
+import Modelos.Reserva;
+import Utils.Conexion;
+
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
@@ -39,6 +46,10 @@ public class RegistroHuesped extends JFrame {
 	private JLabel labelAtras;
 	int xMouse, yMouse;
 
+	
+	private Huespedes huesped; 
+	private Conexion con = new Conexion();
+	private HuespedesDTO huespedesDto = new HuespedesDTO(con); 
 	/**
 	 * Launch the application.
 	 */
@@ -46,7 +57,7 @@ public class RegistroHuesped extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RegistroHuesped frame = new RegistroHuesped();
+					RegistroHuesped frame = new RegistroHuesped(0);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -58,7 +69,7 @@ public class RegistroHuesped extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public RegistroHuesped() {
+	public RegistroHuesped(int idReserva) {
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(RegistroHuesped.class.getResource("/imagenes/lOGO-50PX.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -211,6 +222,8 @@ public class RegistroHuesped extends JFrame {
 		txtNreserva.setBackground(Color.WHITE);
 		txtNreserva.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		contentPane.add(txtNreserva);
+		String id = String.valueOf(idReserva); 
+		txtNreserva.setText(id); 
 		
 		JSeparator separator_1_2 = new JSeparator();
 		separator_1_2.setBounds(560, 170, 289, 2);
@@ -253,6 +266,9 @@ public class RegistroHuesped extends JFrame {
 		btnguardar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+
+				guardarHuesped();
+				
 			}
 		});
 		btnguardar.setLayout(null);
@@ -313,6 +329,24 @@ public class RegistroHuesped extends JFrame {
 		labelExit.setHorizontalAlignment(SwingConstants.CENTER);
 		labelExit.setForeground(SystemColor.black);
 		labelExit.setFont(new Font("Roboto", Font.PLAIN, 18));
+	}
+	
+	private void guardarHuesped() {
+		if(txtNombre.getText() != "" && txtApellido.getText() != "" && txtFechaN != null && txtTelefono.getText() != "" && txtNacionalidad != null && txtNreserva!= null) {
+			int IdReserva = Integer.parseInt(txtNreserva.getText());
+			huesped = new Huespedes(txtNombre.getText() , txtApellido.getText() , txtFechaN, txtNacionalidad.getSelectedItem().toString(), 
+						Integer.parseInt(txtTelefono.getText()), IdReserva); 
+			 
+			huespedesDto.guardar(huesped);
+			Exito exito = new Exito(); 
+			exito.setVisible(true);
+			dispose(); 
+		}else {
+			JOptionPane.showMessageDialog(null, "Todos los campos deben de estar llenos", "Error",JOptionPane.ERROR_MESSAGE );
+		}
+		
+		
+		
 	}
 	
 	

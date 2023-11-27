@@ -10,5 +10,8 @@
 	<classpathentry kind="lib" path="C:/Users/Maynor/Downloads/jcalendar-1.4/lib/jgoodies-common-1.2.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Maynor/Downloads/jcalendar-1.4/lib/jgoodies-looks-2.4.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Maynor/Downloads/jcalendar-1.4/lib/junit-4.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Maynor/Documents/DesafiosOne/Hotel Alura/challenge-one-alura-hotel-latam/JARS/c3p0-0.9.5.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Maynor/Documents/DesafiosOne/Hotel Alura/challenge-one-alura-hotel-latam/JARS/mchange-commons-java-0.2.16.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Maynor/Documents/DesafiosOne/Hotel Alura/challenge-one-alura-hotel-latam/JARS/mysql-connector-j-8.0.32.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
